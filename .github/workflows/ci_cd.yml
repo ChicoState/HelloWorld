@@ -1,0 +1,27 @@
+name: C++ CI with Docker
+
+on: [push, pull_request]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Docker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker.io
+
+      # Optional: If you want to clone the cpp-container repository inside your CI job
+      # or if your Dockerfile is in your HelloWorld repo, adjust accordingly
+      - name: Build Docker Image
+        run: |
+          docker build -t cpp-container .
+
+      - name: Run Tests in Docker
+        run: |
+          docker run -v ${{ github.workspace }}:/usr/src -w /usr/src cpp-container sh ./test_runner.sh
+
